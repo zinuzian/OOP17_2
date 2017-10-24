@@ -134,7 +134,7 @@ bool operator<(const inf_int& a, const inf_int& b){
 
 inf_int operator+(const inf_int&a , const inf_int& b)
 {	
-	if (a.thesign == b.thesign){		//same sign
+	if (a.thesign == b.thesign){		//same sign, result's sign is determined.
 		const inf_int *hi = a.length > b.length ? &a:&b;
 		const inf_int *lo = a.length > b.length ? &b : &a;
 		string str = string(hi->digits);
@@ -219,7 +219,7 @@ inf_int operator-(const inf_int& a, const inf_int& b)
 		}
 		reverse(str.begin(), str.end());
 		inf_int result(str.c_str());
-		result.thesign = !isMinus;
+		result.thesign = isMinus ^ hi->thesign;
 		return result;
 	}
 	else{									//different sign(=add)
@@ -235,18 +235,34 @@ inf_int operator-(const inf_int& a, const inf_int& b)
 		}
 		
 	}
-	
-
-
-
 }
 inf_int operator*(const inf_int& a, const inf_int& b)
 {
-	inf_int result;
+	int len = a.length + b.length;
+	int *r = new int[len];
+	for (int i = 0; i < len; i++){
+		r[i] = 0;
+	}
+	for (int i = 0; i < a.length; i++){
+		int multiplicand = a.digits[i]-'0';
+		for (int j = 0; j < b.length; j++){
+			int multiplyer = b.digits[j]-'0';
+			r[i + j] += (multiplyer * multiplicand);
+		}
+	}
 
-
-
-
+	string str = "";
+	for (int i = 0; i < len-1; i++){
+		if (r[i]>9){
+			r[i + 1] += (r[i] / 10);
+			r[i] %= 10;
+		}
+		str = str + (char)(r[i]+'0');
+	}
+	str = str + (char)(r[len-1] + '0');
+	reverse(str.begin(), str.end());
+	inf_int result(str.c_str());
+	result.thesign = !(a.thesign ^ b.thesign);
 	return result;
 }
 // friend inf_int operator/(const inf_int& , const inf_int&); // not required
