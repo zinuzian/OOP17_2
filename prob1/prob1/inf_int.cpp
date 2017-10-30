@@ -259,7 +259,13 @@ inf_int operator*(const inf_int& a, const inf_int& b)
 		}
 		str = str + (char)(r[i]+'0');
 	}
-	str = str + (char)(r[len-1] + '0');
+	if (r[len-1]!=0)
+		str = str + (char)(r[len-1] + '0');
+	for (int i = str.length() - 1; i >= 0; i--){	//shrink to fit
+		if (str.at(i) != '0') break;
+		str = str.substr(0, str.length() - 1);
+	}
+
 	reverse(str.begin(), str.end());
 	inf_int result(str.c_str());
 	result.thesign = !(a.thesign ^ b.thesign);
